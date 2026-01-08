@@ -22,6 +22,17 @@ You can fine-tune what to sort by toggling the following options:
 *   **Sort Folder Contents**: Recursively sorts the contents within folders.
 *   **Sort Normal Bookmarks**: Includes normal bookmarks (with titles) in the sort.
 
+## Installation
+
+1.  Download the latest `bookmark-sorter-extension.zip` from [Releases](https://github.com/kmdkuk/bookmark-sorter/releases).
+2.  Unzip the file.
+3.  Open `chrome://extensions/` in Chrome.
+4.  Turn on **"Developer mode"** in the top right corner.
+5.  Click **"Load unpacked"** and select the unzipped directory.
+
+    > [!NOTE]
+    > Do not delete the unzipped folder. Chrome loads the extension directly from this directory.
+
 ## Development & Build
 
 ### Install Dependencies
@@ -63,6 +74,17 @@ The build artifacts will be output to the `dist` directory.
 *   **Sort Folders**: フォルダ自体をソート対象にします。フォルダのスコアは、そのフォルダに含まれる全ブックマークの合計アクセス数で計算されます。
 *   **Sort Folder Contents**: フォルダの中身も再帰的にソートします。
 *   **Sort Normal Bookmarks**: 通常の（タイトルがある）ブックマークをソート対象にします。
+
+## インストール方法
+
+1.  [Releases](https://github.com/kmdkuk/bookmark-sorter/releases) ページから最新の `bookmark-sorter-extension.zip` をダウンロードします。
+2.  ダウンロードした zip ファイルを解凍します。
+3.  Chromeで `chrome://extensions/` を開きます。
+4.  右上の **「デベロッパーモード」** をオンにします。
+5.  **「パッケージ化されていない拡張機能を読み込む」** をクリックし、解凍したフォルダを選択します。
+
+    > [!NOTE]
+    > 解凍したフォルダは削除しないでください。Chromeはこのディレクトリから直接拡張機能を読み込みます。削除すると拡張機能が機能しなくなります。
 
 ## 開発・ビルド方法
 

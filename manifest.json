@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Bookmark Sorter",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Sort bookmarks by usage frequency.",
   "action": {
     "default_popup": "src/popup/index.html"

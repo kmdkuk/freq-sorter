@@ -1,6 +1,6 @@
 {
   "name": "bookmark-sorter",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "ブックマークを使用頻度でソートしたい。",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "release:tag": "node scripts/tag-release.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "@types/chrome": "^0.1.32",
     "eslint": "^9.39.2",
     "globals": "^17.0.0",
+    "semver": "^7.7.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.52.0",
     "vite": "^7.3.1",

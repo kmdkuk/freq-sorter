@@ -27,10 +27,9 @@ jobs:
         run: npm run build
 
       - name: Zip extension
-        run: cd dist && zip -r ../extension.zip .
+        run: cd dist && zip -r ../bookmark-sorter-extension.zip .
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: extension.zip
-          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create ${{ github.ref_name }} bookmark-sorter-extension.zip --generate-notes
