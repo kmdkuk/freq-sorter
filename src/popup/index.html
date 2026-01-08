@@ -8,6 +8,24 @@
   <body>
     <div id="app">
       <h1>Bookmark Sorter</h1>
+      <div class="options">
+        <div>
+          <input type="checkbox" id="sortFaviconBookmarks" />
+          <label for="sortFaviconBookmarks">Sort Favicon Bookmarks</label>
+        </div>
+        <div>
+          <input type="checkbox" id="sortFolders" />
+          <label for="sortFolders">Sort Folders</label>
+        </div>
+        <div>
+          <input type="checkbox" id="sortFolderContents" />
+          <label for="sortFolderContents">Sort Folder Contents</label>
+        </div>
+        <div>
+          <input type="checkbox" id="sortNormalBookmarks" />
+          <label for="sortNormalBookmarks">Sort Normal Bookmarks</label>
+        </div>
+      </div>
       <button id="sort-btn">Sort Now</button>
     </div>
     <script type="module" src="./main.ts"></script>

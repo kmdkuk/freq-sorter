@@ -1,4 +1,4 @@
-console.log('Background service worker started');
+console.log("Background service worker started");
 
 interface BookmarkStats {
   [url: string]: number;
@@ -6,7 +6,9 @@ interface BookmarkStats {
 
 // Helper to normalize URL if needed, currently using raw string match for simplicity
 // and rely on chrome.bookmarks.search to handle matching
-const getBookmarkedItems = async (url: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> => {
+const getBookmarkedItems = async (
+  url: string
+): Promise<chrome.bookmarks.BookmarkTreeNode[]> => {
   return new Promise((resolve) => {
     chrome.bookmarks.search({ url }, (results) => {
       resolve(results);
@@ -17,7 +19,7 @@ const getBookmarkedItems = async (url: string): Promise<chrome.bookmarks.Bookmar
 const incrementCounter = async (url: string) => {
   const items = await getBookmarkedItems(url);
   if (items.length > 0) {
-    chrome.storage.local.get(['stats'], (result) => {
+    chrome.storage.local.get(["stats"], (result) => {
       const stats = (result.stats || {}) as BookmarkStats;
       stats[url] = (stats[url] || 0) + 1;
       chrome.storage.local.set({ stats });
@@ -27,119 +29,161 @@ const incrementCounter = async (url: string) => {
 };
 
 chrome.tabs.onUpdated.addListener((_tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url) {
+  if (changeInfo.status === "complete" && tab.url) {
     incrementCounter(tab.url);
   }
 });
 
+// Sort options passed from popup
+interface SortOptions {
+  sortFaviconBookmarks: boolean;
+  sortFolders: boolean;
+  sortFolderContents: boolean;
+  sortNormalBookmarks: boolean;
+}
+
 // Recursive function to sort bookmarks
-const sortBookmarks = async () => {
-  console.log('Starting sort...');
-  const result = await chrome.storage.local.get(['stats']);
+const sortBookmarks = async (options: SortOptions) => {
+  console.log("Starting sort with options:", options);
+  const result = await chrome.storage.local.get(["stats"]);
   const stats = (result.stats || {}) as BookmarkStats;
 
   const processNode = async (node: chrome.bookmarks.BookmarkTreeNode) => {
     if (node.children) {
-      // 1. Identify items to sort: Bookmarks with empty title
+      // 1. Identify items to sort based on options
       const originalChildren = [...node.children];
+      // Create a copy to determine the desired order
+      const desiredOrder = [...originalChildren];
+
       const sortableIndices: number[] = [];
-      const sortableItems: chrome.bookmarks.BookmarkTreeNode[] = [];
 
       originalChildren.forEach((child, index) => {
-        // Condition: Is bookmark (has URL) AND title is empty (whitespace trimmed)
-         if (child.url && child.title.trim() === '') {
-           sortableIndices.push(index);
-           sortableItems.push(child);
-         }
-      });
-
-      if (sortableItems.length > 1) {
-        // 2. Sort the subset
-        sortableItems.sort((a, b) => {
-          const countA = (a.url && stats[a.url]) || 0;
-          const countB = (b.url && stats[b.url]) || 0;
-          return countB - countA; // Descending
-        });
-
-        // 3. Create the target new order locally to determine moves
-        // We start with a copy of original children
-        const desiredOrder = [...originalChildren];
-        // Place sorted items back into their reserved indices
-        for (let k = 0; k < sortableIndices.length; k++) {
-          const targetIndex = sortableIndices[k];
-          desiredOrder[targetIndex] = sortableItems[k];
+        let shouldSort = false;
+        if (!child.url) {
+          // Folder
+          if (options.sortFolders) shouldSort = true;
+        } else {
+          // Bookmark
+          if (child.title.trim() === "") {
+            if (options.sortFaviconBookmarks) shouldSort = true;
+          } else {
+            if (options.sortNormalBookmarks) shouldSort = true;
+          }
         }
 
-        // 4. Apply moves
-        // Strategy: Iterate through the desired order.
-        // If the item currently at index 'i' is NOT what we expect (desiredOrder[i]),
-        // then we find where desiredOrder[i] is currently, and move it to 'i'.
-        
-        // We need a way to track current state because 'move' changes indices.
-        // Getting children fresh from API is robust but one call per move.
-        // Given typically small number of moves, maybe OK.
-        // Let's implement robust approach: Re-fetch children inside the loop if we make a move?
-        // OR: maintain a local model of the IDs in current order.
-        
-        const currentIds = originalChildren.map(c => c.id);
+        if (shouldSort) {
+          sortableIndices.push(index);
+        }
+      });
 
-        for (let i = 0; i < desiredOrder.length; i++) {
-          const targetId = desiredOrder[i].id;
-          
-          if (currentIds[i] !== targetId) {
-             // Find where it is now
-             const currentIndex = currentIds.indexOf(targetId);
-             if (currentIndex === -1) {
-                 console.error(`Sort error: ID ${targetId} lost during sort.`);
-                 continue; 
-             }
-             
-             // Move targetId to position 'i'
-             try {
-                if (node.id !== '0') { // Skip root just in case, though usually empty bookmarks aren't direct children of root
-                    await chrome.bookmarks.move(targetId, { index: i });
-                }
-             } catch (e) {
-                 console.error(`Move failed`, e);
-             }
-
-             // Update local model
-             // We removed item at currentIndex and inserted at i
-             const [movedItem] = currentIds.splice(currentIndex, 1);
-             currentIds.splice(i, 0, movedItem);
+      // Helper to calculate total clicks for a folder recursively
+      const getFolderScore = (
+        folderNode: chrome.bookmarks.BookmarkTreeNode
+      ): number => {
+        let score = 0;
+        const traverse = (node: chrome.bookmarks.BookmarkTreeNode) => {
+          if (node.url) {
+            score += stats[node.url] || 0;
           }
+          if (node.children) {
+            node.children.forEach(traverse);
+          }
+        };
+        traverse(folderNode);
+        return score;
+      };
+
+      const getScore = (node: chrome.bookmarks.BookmarkTreeNode): number => {
+        if (!node.url) {
+          return getFolderScore(node);
+        }
+        return stats[node.url] || 0;
+      };
+
+      if (sortableIndices.length > 1) {
+        const items = sortableIndices.map((i) => originalChildren[i]);
+
+        const itemsWithScore = items.map((item) => ({
+          item,
+          score: getScore(item),
+        }));
+
+        itemsWithScore.sort((a, b) => b.score - a.score);
+
+        const sortedItems = itemsWithScore.map((x) => x.item);
+
+        for (let k = 0; k < sortableIndices.length; k++) {
+          desiredOrder[sortableIndices[k]] = sortedItems[k];
+        }
+      }
+
+      // 4. Apply moves to match desiredOrder
+      const currentIds = originalChildren.map((c) => c.id);
+
+      for (let i = 0; i < desiredOrder.length; i++) {
+        const targetId = desiredOrder[i].id;
+
+        if (currentIds[i] !== targetId) {
+          const currentIndex = currentIds.indexOf(targetId);
+          if (currentIndex === -1) {
+            console.error(`Sort error: ID ${targetId} lost during sort.`);
+            continue;
+          }
+
+          try {
+            if (node.id !== "0") {
+              // Move item to index i
+              await chrome.bookmarks.move(targetId, { index: i });
+            }
+          } catch (e) {
+            console.error(`Move failed`, e);
+          }
+
+          // Update local model
+          const [movedItem] = currentIds.splice(currentIndex, 1);
+          currentIds.splice(i, 0, movedItem);
         }
       }
 
       // Recurse for folders
       for (const child of node.children) {
-        if (!child.url) { // It is a folder
-          await processNode(child);
+        if (!child.url) {
+          // It is a folder
+          // Recurse only if we are at the root (to reach Bookmark Bar/Other)
+          // or if sortFolderContents option is enabled
+          if (node.id === "0" || options.sortFolderContents) {
+            await processNode(child);
+          }
         }
       }
     }
   };
 
   const traverseTree = (nodes: chrome.bookmarks.BookmarkTreeNode[]) => {
-      nodes.forEach(node => processNode(node));
+    nodes.forEach((node) => processNode(node));
   };
-    
+
+  // Since getFolderScore might be expensive, we could optimize by caching or strictly controlling when it runs.
+  // For now, simple implementation.
+  // We need to fetch the full tree WITH children to calculate scores correctly.
+  // chrome.bookmarks.getTree returns the full tree.
+
   chrome.bookmarks.getTree((tree) => {
-      traverseTree(tree);
-      console.log('Sort complete');
+    traverseTree(tree);
+    console.log("Sort complete");
   });
 };
 
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message.command === 'sort') {
-    sortBookmarks().then(() => sendResponse({ status: 'done' }));
+  if (message.command === "sort") {
+    const options = message.options as SortOptions;
+    sortBookmarks(options).then(() => sendResponse({ status: "done" }));
     return true; // Keep channel open for async response
   }
   return false;
 });
 
-
 chrome.bookmarks.onCreated.addListener(() => {
-  console.log('Bookmark created');
+  console.log("Bookmark created");
 });
