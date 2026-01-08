@@ -24,7 +24,7 @@ You can fine-tune what to sort by toggling the following options:
 
 ## Installation
 
-> This extension modifies your bookmarks. While I strive for reliability, I cannot guarantee that no data loss will occur. **Please export and backup your bookmarks before installing or using this extension.** The author assumes no responsibility for any damage to your bookmarks.
+This extension modifies your bookmarks. While I strive for reliability, I cannot guarantee that no data loss will occur. **Please export and backup your bookmarks before installing or using this extension.** The author assumes no responsibility for any damage to your bookmarks.
 
 1.  Download the latest `bookmark-sorter-extension.zip` from [Releases](https://github.com/kmdkuk/bookmark-sorter/releases).
 2.  Unzip the file.
