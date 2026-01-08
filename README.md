@@ -1,8 +1,8 @@
-# Bookmark Sorter
+# FreqSort
 
 A Chrome extension that automatically sorts your bookmarks based on usage frequency.
 
-- [日本語](README.md#bookmark-sorter-日本語)
+- [日本語](README.md#freq-sort-日本語)
 
 ## Features
 
@@ -26,7 +26,7 @@ You can fine-tune what to sort by toggling the following options:
 
 This extension modifies your bookmarks. While I strive for reliability, I cannot guarantee that no data loss will occur. **Please export and backup your bookmarks before installing or using this extension.** The author assumes no responsibility for any damage to your bookmarks.
 
-1.  Download the latest `bookmark-sorter-extension.zip` from [Releases](https://github.com/kmdkuk/bookmark-sorter/releases).
+1.  Download the latest `freq-sort-extension.zip` from [Releases](https://github.com/kmdkuk/freq-sorter/releases).
 2.  Unzip the file.
 3.  Open `chrome://extensions/` in Chrome.
 4.  Turn on **"Developer mode"** in the top right corner.
@@ -55,7 +55,7 @@ The build artifacts will be output to the `dist` directory.
 
 ---
 
-# Bookmark Sorter (日本語)
+# FreqSort (日本語)
 
 ブックマークを使用頻度に基づいて自動的にソートするChrome拡張機能です。
 
@@ -81,7 +81,7 @@ The build artifacts will be output to the `dist` directory.
 
 本拡張機能はブックマークを変更します。信頼性の向上には努めていますが、データの消失が起きないことを保証するものではありません。**インストールや使用の前に、必ずブックマークをエクスポートしてバックアップを作成してください。** 作者は、本拡張機能の使用によって生じたブックマークの破損や消失について一切の責任を負いません。ご利用は自己責任でお願いします。
 
-1.  [Releases](https://github.com/kmdkuk/bookmark-sorter/releases) ページから最新の `bookmark-sorter-extension.zip` をダウンロードします。
+1.  [Releases](https://github.com/kmdkuk/freq-sorter/releases) ページから最新の `freq-sort-extension.zip` をダウンロードします。
 2.  ダウンロードした zip ファイルを解凍します。
 3.  Chromeで `chrome://extensions/` を開きます。
 4.  右上の **「デベロッパーモード」** をオンにします。
