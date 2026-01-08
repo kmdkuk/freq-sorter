@@ -1,0 +1,30 @@
+{
+  "name": "bookmark-sorter",
+  "version": "1.0.0",
+  "description": "ブックマークを使用頻度でソートしたい。",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kmdkuk/bookmark-sorter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kmdkuk/bookmark-sorter/issues"
+  },
+  "homepage": "https://github.com/kmdkuk/bookmark-sorter#readme",
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.3.0",
+    "@types/chrome": "^0.1.32",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}
