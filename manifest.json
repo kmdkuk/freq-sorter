@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "FreqSort",
+  "name": "FreqSorter",
   "version": "0.1.0",
   "description": "A Chrome extension that automatically sorts your bookmarks based on usage frequency.",
   "action": {
