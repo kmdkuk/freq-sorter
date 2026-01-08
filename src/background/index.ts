@@ -1,8 +1,14 @@
+import { ChromeLocalStorage, StorageService } from "../storage";
+
 console.log("Background service worker started");
 
-interface BookmarkStats {
+export interface BookmarkStats {
   [url: string]: number;
 }
+
+// Global instance but can be swapped for testing if we structure correctly
+// For now, we instantiate the default one.
+const storageService: StorageService = new ChromeLocalStorage();
 
 // Helper to normalize URL if needed, currently using raw string match for simplicity
 // and rely on chrome.bookmarks.search to handle matching
@@ -16,15 +22,17 @@ const getBookmarkedItems = async (
   });
 };
 
-const incrementCounter = async (url: string) => {
+export const incrementCounter = async (
+  url: string,
+  storage: StorageService = storageService
+) => {
   const items = await getBookmarkedItems(url);
   if (items.length > 0) {
-    chrome.storage.local.get(["stats"], (result) => {
-      const stats = (result.stats || {}) as BookmarkStats;
-      stats[url] = (stats[url] || 0) + 1;
-      chrome.storage.local.set({ stats });
-      console.log(`Updated count for ${url}: ${stats[url]}`);
-    });
+    const result = await storage.get<{ stats: BookmarkStats }>(["stats"]);
+    const stats = (result.stats || {}) as BookmarkStats;
+    stats[url] = (stats[url] || 0) + 1;
+    await storage.set({ stats });
+    console.log(`Updated count for ${url}: ${stats[url]}`);
   }
 };
 
@@ -35,7 +43,7 @@ chrome.tabs.onUpdated.addListener((_tabId, changeInfo, tab) => {
 });
 
 // Sort options passed from popup
-interface SortOptions {
+export interface SortOptions {
   sortFaviconBookmarks: boolean;
   sortFolders: boolean;
   sortFolderContents: boolean;
@@ -43,9 +51,12 @@ interface SortOptions {
 }
 
 // Recursive function to sort bookmarks
-const sortBookmarks = async (options: SortOptions) => {
+export const sortBookmarks = async (
+  options: SortOptions,
+  storage: StorageService = storageService
+) => {
   console.log("Starting sort with options:", options);
-  const result = await chrome.storage.local.get(["stats"]);
+  const result = await storage.get<{ stats: BookmarkStats }>(["stats"]);
   const stats = (result.stats || {}) as BookmarkStats;
 
   const processNode = async (node: chrome.bookmarks.BookmarkTreeNode) => {
