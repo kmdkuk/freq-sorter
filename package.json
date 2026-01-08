@@ -1,7 +1,7 @@
 {
   "name": "bookmark-sorter",
   "version": "0.1.0",
-  "description": "ブックマークを使用頻度でソートしたい。",
+  "description": "Chrome extension to sort bookmarks by frequency of use",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
