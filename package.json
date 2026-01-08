@@ -1,5 +1,5 @@
 {
-  "name": "bookmark-sorter",
+  "name": "freq-sort",
   "version": "0.1.0",
   "description": "Chrome extension to sort bookmarks by frequency of use",
   "main": "index.js",
@@ -13,16 +13,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kmdkuk/bookmark-sorter.git"
+    "url": "git+https://github.com/kmdkuk/freq-sorter.git"
   },
   "keywords": [],
   "author": "kmdkuk",
   "license": "MIT",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/kmdkuk/bookmark-sorter/issues"
+    "url": "https://github.com/kmdkuk/freq-sorter/issues"
   },
-  "homepage": "https://github.com/kmdkuk/bookmark-sorter#readme",
+  "homepage": "https://github.com/kmdkuk/freq-sorter#readme",
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.3.0",
     "@eslint/js": "^9.39.2",
