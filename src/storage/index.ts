@@ -1,6 +1,6 @@
 export interface StorageService {
   get<T>(keys: string | string[] | null): Promise<T>;
-  set(items: { [key: string]: any }): Promise<void>;
+  set(items: { [key: string]: unknown }): Promise<void>;
   // Add other methods if needed, e.g., remove, clear
 }
 
@@ -13,7 +13,7 @@ export class ChromeLocalStorage implements StorageService {
     });
   }
 
-  set(items: { [key: string]: any }): Promise<void> {
+  set(items: { [key: string]: unknown }): Promise<void> {
     return new Promise((resolve) => {
       chrome.storage.local.set(items, () => {
         resolve();
@@ -23,7 +23,7 @@ export class ChromeLocalStorage implements StorageService {
 }
 
 export class InMemoryStorage implements StorageService {
-  private store: { [key: string]: any } = {};
+  private store: { [key: string]: unknown } = {};
 
   async get<T>(keys: string | string[] | null): Promise<T> {
     if (keys === null) {
@@ -33,7 +33,7 @@ export class InMemoryStorage implements StorageService {
       return { [keys]: this.store[keys] } as T;
     }
     if (Array.isArray(keys)) {
-      const result: { [key: string]: any } = {};
+      const result: { [key: string]: unknown } = {};
       keys.forEach((key) => {
         result[key] = this.store[key];
       });
@@ -43,7 +43,7 @@ export class InMemoryStorage implements StorageService {
     return {} as T;
   }
 
-  async set(items: { [key: string]: any }): Promise<void> {
+  async set(items: { [key: string]: unknown }): Promise<void> {
     Object.assign(this.store, items);
   }
 }

@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { InMemoryStorage } from "../storage";
+import {
+  incrementCounter as IncrementCounterType,
+  sortBookmarks as SortBookmarksType,
+} from "./index";
 
 // Must be hoisted or defined before imports that use it if we were mocking modules,
 // but here we are stubbing the global.
@@ -30,8 +34,8 @@ vi.stubGlobal("chrome", chromeMock);
 
 describe("Background Logic", () => {
   let storage: InMemoryStorage;
-  let incrementCounter: any;
-  let sortBookmarks: any;
+  let incrementCounter: typeof IncrementCounterType;
+  let sortBookmarks: typeof SortBookmarksType;
   // let SortOptions: any; // Types are erased at runtime so we don't import them dynamically for usage, just for type hints if needed but here we use any or defined interface locally if strictly needed.
 
   beforeEach(async () => {
