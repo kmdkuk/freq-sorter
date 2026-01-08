@@ -24,6 +24,8 @@ You can fine-tune what to sort by toggling the following options:
 
 ## Installation
 
+> This extension modifies your bookmarks. While I strive for reliability, I cannot guarantee that no data loss will occur. **Please export and backup your bookmarks before installing or using this extension.** The author assumes no responsibility for any damage to your bookmarks.
+
 1.  Download the latest `bookmark-sorter-extension.zip` from [Releases](https://github.com/kmdkuk/bookmark-sorter/releases).
 2.  Unzip the file.
 3.  Open `chrome://extensions/` in Chrome.
@@ -76,6 +78,8 @@ The build artifacts will be output to the `dist` directory.
 *   **Sort Normal Bookmarks**: 通常の（タイトルがある）ブックマークをソート対象にします。
 
 ## インストール方法
+
+本拡張機能はブックマークを変更します。信頼性の向上には努めていますが、データの消失が起きないことを保証するものではありません。**インストールや使用の前に、必ずブックマークをエクスポートしてバックアップを作成してください。** 作者は、本拡張機能の使用によって生じたブックマークの破損や消失について一切の責任を負いません。ご利用は自己責任でお願いします。
 
 1.  [Releases](https://github.com/kmdkuk/bookmark-sorter/releases) ページから最新の `bookmark-sorter-extension.zip` をダウンロードします。
 2.  ダウンロードした zip ファイルを解凍します。
