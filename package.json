@@ -14,8 +14,8 @@
     "url": "git+https://github.com/kmdkuk/bookmark-sorter.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "kmdkuk",
+  "license": "MIT",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/kmdkuk/bookmark-sorter/issues"
