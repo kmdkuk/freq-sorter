@@ -87,6 +87,57 @@ describe("Background Logic", () => {
       ]);
       expect(stats.stats).toBeUndefined(); // Or empty depending on how get works for missing keys
     });
+
+    describe("Partial URL Match logic", () => {
+      it("should increment count for subpath visit (Partial Match)", async () => {
+        const bookmarkUrl = "https://example.invalid";
+        const visitedUrl = "https://example.invalid/foo/bar";
+
+        // Mock search to return the bookmark
+        chromeMock.bookmarks.search.mockImplementation((_query, callback) => {
+          callback([{ id: "p1", title: "Root", url: bookmarkUrl }]);
+        });
+
+        await incrementCounter(visitedUrl, storage);
+
+        const stats = await storage.get<{ stats: Record<string, number> }>([
+          "stats",
+        ]);
+        expect(stats.stats).toEqual({ [bookmarkUrl]: 1 });
+      });
+
+      it("should increment count for protocol/www mismatch", async () => {
+        const bookmarkUrl = "https://example.invalid";
+        const visitedUrl = "http://www.example.invalid/foo";
+
+        chromeMock.bookmarks.search.mockImplementation((_query, callback) => {
+          callback([{ id: "p2", title: "Clean", url: bookmarkUrl }]);
+        });
+
+        await incrementCounter(visitedUrl, storage);
+
+        const stats = await storage.get<{ stats: Record<string, number> }>([
+          "stats",
+        ]);
+        expect(stats.stats).toEqual({ [bookmarkUrl]: 1 });
+      });
+
+      it("should NOT increment if bookmark is more specific than visit (Parent Path)", async () => {
+        const bookmarkUrl = "https://example.invalid/foo";
+        const visitedUrl = "https://example.invalid";
+
+        chromeMock.bookmarks.search.mockImplementation((_query, callback) => {
+          callback([{ id: "p3", title: "Specific", url: bookmarkUrl }]);
+        });
+
+        await incrementCounter(visitedUrl, storage);
+
+        const stats = await storage.get<{ stats: Record<string, number> }>([
+          "stats",
+        ]);
+        expect(stats.stats).toBeUndefined();
+      });
+    });
   });
 
   describe("sortBookmarks", () => {

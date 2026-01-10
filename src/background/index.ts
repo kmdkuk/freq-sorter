@@ -10,15 +10,38 @@ export interface BookmarkStats {
 // For now, we instantiate the default one.
 const storageService: StorageService = new ChromeLocalStorage();
 
-// Helper to normalize URL if needed, currently using raw string match for simplicity
-// and rely on chrome.bookmarks.search to handle matching
+// Helper to normalize URL: remove protocol and www.
+const normalizeUrl = (url: string): string => {
+  return url.replace(/^https?:\/\//, "").replace(/^www\./, "");
+};
+
+// Find bookmarks where the visited URL starts with the bookmark URL (normalized)
 const getBookmarkedItems = async (
-  url: string
+  visitedUrl: string
 ): Promise<chrome.bookmarks.BookmarkTreeNode[]> => {
   return new Promise((resolve) => {
-    chrome.bookmarks.search({ url }, (results) => {
-      resolve(results);
-    });
+    try {
+      const urlObj = new URL(visitedUrl);
+      const hostname = urlObj.hostname;
+
+      // Search by hostname first to narrow down candidates efficiently
+      chrome.bookmarks.search({ query: hostname }, (results) => {
+        const normalizedVisited = normalizeUrl(visitedUrl);
+
+        const matched = results.filter((bookmark) => {
+          if (!bookmark.url) return false;
+          const normalizedBookmark = normalizeUrl(bookmark.url);
+          // Check if visited URL starts with bookmark URL (after normalization)
+          return normalizedVisited.startsWith(normalizedBookmark);
+        });
+
+        resolve(matched);
+      });
+    } catch (e) {
+      // Invalid URL passed
+      console.error("Invalid URL:", visitedUrl, e);
+      resolve([]);
+    }
   });
 };
 
@@ -30,9 +53,23 @@ export const incrementCounter = async (
   if (items.length > 0) {
     const result = await storage.get<{ stats: BookmarkStats }>(["stats"]);
     const stats = (result.stats || {}) as BookmarkStats;
-    stats[url] = (stats[url] || 0) + 1;
-    await storage.set({ stats });
-    console.log(`Updated count for ${url}: ${stats[url]}`);
+
+    let updated = false;
+    items.forEach((item) => {
+      if (item.url) {
+        stats[item.url] = (stats[item.url] || 0) + 1;
+        updated = true;
+        console.log(
+          `Updated count for bookmark ${item.url} (visited ${url}): ${
+            stats[item.url]
+          }`
+        );
+      }
+    });
+
+    if (updated) {
+      await storage.set({ stats });
+    }
   }
 };
 
